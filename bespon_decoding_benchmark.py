@@ -202,7 +202,9 @@ for pkg in available_packages:
         benchmark_results['{0} ({1})'.format(pkg.name, pkg.variant)] = benchmark_time
 
 output = {'python': py_info, 'template_number': args.template_number,
-          'timeit_number': args.timeit_number, 'results': benchmark_results}
+          'timeit_number': args.timeit_number,
+          'timeit_repeat': args.timeit_repeat,
+          'results': benchmark_results}
 if args.py_out:
     print(str(output))
 else:

@@ -32,8 +32,10 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--bespon_py', help='Use bespon package at specified path, rather than installed bespon package')
-parser.add_argument('--timeit_number', type=int, default=10,
-                    help='Number of timeit runs to use for each language')
+parser.add_argument('--timeit_number', type=int, default=1,
+                    help='Number of times to load test data for each package per timed run')
+parser.add_argument('--timeit_repeat', type=int, default=10,
+                    help='Number of times to measure performance of each package (min is reported)')
 parser.add_argument('--template_number', type=int, default=1000,
                     help='Number of times to concatenate the template for each language in creating the decoding dataset')
 parser.add_argument('--py_out', default=False, action='store_true',
@@ -192,7 +194,8 @@ for pkg in available_packages:
     else:
         code = '{package}.{loads}(data_string, {args})'.format(package=pkg.name, loads=pkg.loads_method, args=','.join(pkg.loads_args))
     setup = '{imp}\ndata_string = """\n{data_string}"""\n'.format(imp=pkg.import_template, data_string=data_string)
-    benchmark_time = timeit.timeit(code, setup=setup, number=args.timeit_number)
+    benchmark_times = timeit.repeat(code, setup=setup, repeat=args.timeit_repeat, number=args.timeit_number)
+    benchmark_time = min(benchmark_times)
     if pkg.variant is None:
         benchmark_results[pkg.name] = benchmark_time
     else:
